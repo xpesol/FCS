@@ -13,7 +13,7 @@
 								{% for loadingsplitsku in listCp %}
                                 <th>{{loadingsplitsku}}</th>
 								{% endfor %}
-								<th> Quantité déjà affectée </th>
+								<th> Quantité restant à affecter </th>
 							</tr>
 						</thead>
 						 
@@ -38,7 +38,8 @@
 								 render( 
 								        controller(  'FCSCPLoadingSplitBundle:Table:getQuantitiesByLoad', 
 								                      {'entrepot' : loadingentrepot.entrepot, 
-													   'idloadingposku' : cpId } 
+													   'idloadingposku' : cpId, 
+													   'po' : po} 
 												  )
 										) 
 								 }} 

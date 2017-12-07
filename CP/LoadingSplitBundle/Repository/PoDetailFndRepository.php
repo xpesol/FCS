@@ -14,7 +14,7 @@ class PoDetailFndRepository extends \Doctrine\ORM\EntityRepository
 		public function findQuantitiesOrderedByPoEntrepotMad($po, $entrepot)
 		{	   
 		  $query = $this->_em->createQuery(
-		  'SELECT a FROM LoadingSplitBundle:PoDetailFnd a WHERE a.numPo = :numPo AND a.entrepot = :entrepot');
+		  'SELECT a FROM FCSCPLoadingSplitBundle:PoDetailFnd a WHERE a.numPo = :numPo AND a.entrepot = :entrepot');
 		  $query->setParameter('numPo', $po);
 		  $query->setParameter('entrepot', $entrepot);
 		  return $query ->getOneOrNullResult();

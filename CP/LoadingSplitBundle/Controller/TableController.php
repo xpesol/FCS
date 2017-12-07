@@ -45,11 +45,18 @@ class TableController extends Controller {
         return $this->render('FCSCPLoadingSplitBundle:Table:select.html.twig', array('listCp' => $listCp, 'listCpId' => $listCpId, 'po' => $po, 'listEntrepot' => $listEntrepot, 'quantitesLoaded' => $quantitesLoaded));
     }
 
-    public function getQuantitiesByLoadAction($entrepot, $idloadingposku) { # Call in select.html.twig to get quantites by CP ref, Entrepot and ID cp_loading_po_sku
+    public function getQuantitiesByLoadAction($entrepot, $idloadingposku, $po) { # Call in select.html.twig to get quantites by CP ref, Entrepot and ID cp_loading_po_sku
         $em = $this->getDoctrine()->getManager('pgsql_yr');
         $repositorySkuDetailFnd = $em->getRepository('FCSCPLoadingSplitBundle:Loadingposkudetailfnd');
         $listEntrepotByIdLoadingSku = $repositorySkuDetailFnd->findQuantitesByCpEntrepotIdLoadingPoSku($entrepot, $idloadingposku);
-        if (empty($listEntrepotByIdLoadingSku)) {
+        
+		# Get Quantities Ordered By Po Entrepot Mad from table po_detal_fnd
+		$repositoryPoDetailFnd = $em->getRepository('FCSCPLoadingSplitBundle:PoDetailFnd');	
+		$listQuantitiesOrderedByPoEntrepotMad = $repositoryPoDetailFnd -> findQuantitiesOrderedByPoEntrepotMad($po, $entrepot);
+		$quantitiesOrderedByPoEntrepot = $listQuantitiesOrderedByPoEntrepotMad->getQuantites();
+		self::$orderedQuantities = $quantitiesOrderedByPoEntrepot;
+		
+		if (empty($listEntrepotByIdLoadingSku)) {
             $quantitesLoaded = '';
         } else {
             $quantitesLoaded = $listEntrepotByIdLoadingSku->getQuantites();
@@ -61,7 +68,7 @@ class TableController extends Controller {
 
     public function getQuantitiesRemainingsAction() { # Call in select.html.twig to get quantites remaining
         $quantitiesRemainingOutput = 0;
-        $quantitiesRemainingOutput = self::$quantitiesRemaining;
+		$quantitiesRemainingOutput =  self::$orderedQuantities - self::$quantitiesRemaining;
         echo $quantitiesRemainingOutput;
         self::$quantitiesRemaining = 0;
         return $this->render('FCSCPLoadingSplitBundle:Table:quantitesRemaining.html.twig', array('remaining' => $quantitiesRemainingOutput));
